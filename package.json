@@ -1,5 +1,5 @@
 {
-  "name": "next-starter-kit",
+  "name": "banpick-fe",
   "version": "0.2.0",
   "private": true,
   "scripts": {
@@ -21,12 +21,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.28.14",
-    "@toast-ui/editor": "^3.2.2",
-    "@toast-ui/react-editor": "^3.2.3",
     "classnames": "^2.5.1",
-    "next": "14.0.4",
-    "next-auth": "^4.24.7",
-    "npm-check-updates": "^16.14.18",
+    "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.2"
