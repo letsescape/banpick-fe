@@ -28,8 +28,8 @@ interface ChampionData {
   image: string;
 
   // TODO: 모름...
-  champion_id: number,
-  img_default: string,
+  champion_id: number;
+  img_default: string;
 }
 
 interface ChampionsRes {
