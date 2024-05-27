@@ -50,7 +50,7 @@ const ChampionPick = styled.div`
   width: 100%;
   height: 580px;
   padding: 40px 40px 0;
-  
+
   > div {
     width: 100%;
   }
