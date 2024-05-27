@@ -6,13 +6,13 @@ import { TOKEN_KEY } from '@/app/constants/auth';
 
 const fetchApi = async <Response>(
   url: string,
-  options: RequestInit = {},
+  options: RequestInit = {}
 ): Promise<Response> => {
   const cookieStore = cookies();
   const requestUrl = getRequestUrl({
     url,
     method: options?.method,
-    query: (options?.body as string),
+    query: options?.body as string,
   });
   const hasAccessToken = cookieStore.has(TOKEN_KEY);
 
@@ -50,10 +50,13 @@ const updateObjectToQueryString = (obj: string) => {
   } catch {
     return '';
   }
-
 };
 
-const getRequestUrl = ({ url, query, method }: {
+const getRequestUrl = ({
+  url,
+  query,
+  method,
+}: {
   url: string;
   query?: string;
   method?: string;

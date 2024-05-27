@@ -26,7 +26,6 @@ interface TempChampion {
   img_default: string;
 }
 
-
 // API Types
 
 // TODO: Define SimulationLinks
@@ -37,7 +36,7 @@ interface SimulationLinks {
 
 // TODO: Define SimulationData
 type SimulationData = any & {
-  links:SimulationLinks
+  links: SimulationLinks;
 };
 
 interface SimulationCreateReq {
@@ -76,5 +75,5 @@ export type {
   SimulationRes,
   SimulationResultReq,
   SimulationResultRes,
-  SimulationLinks
+  SimulationLinks,
 };
