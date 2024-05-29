@@ -86,7 +86,8 @@ export default function Simulation({
       .find((u: any) => u.socket_id === socketId);
     setCurrentParticipant(participant || '');
 
-    echo.private(`presence-simulations.${id}`)
+    echo
+      .private(`presence-simulations.${id}`)
       .error(() => {
         alert('오류');
         router.push('/');
