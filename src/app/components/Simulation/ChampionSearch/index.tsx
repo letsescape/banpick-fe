@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React, { useState } from 'react';
 
 import {
@@ -6,8 +5,6 @@ import {
   SearchWrap,
 } from '@/app/components/Simulation/ChampionSearch/styled';
 import { InputSearchProp } from '@/app/components/Simulation/ChampionSearch/types';
-
-import searchIcon from '@/assets/icons/ico-search-bk.svg';
 
 export default function ChampionSearch({
   onSubmit,
@@ -29,7 +26,7 @@ export default function ChampionSearch({
         onChange={e => setInput(e.target.value)}
       />
       <Button type="submit">
-        <Image src={searchIcon} alt="검색" width={11} height={11} />
+        {/*<Image src={searchIcon} alt="검색" width={11} height={11} />*/}
       </Button>
     </SearchWrap>
   );

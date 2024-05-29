@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
+import Echo from 'laravel-echo';
 import { useParams, useRouter } from 'next/navigation';
-import Pusher from 'pusher-js';
 import { useEffect, useState } from 'react';
 
 import { fetchParticipantUpdate } from '@/app/api/participant';
@@ -19,14 +19,14 @@ interface SimulationProps {
   data: SimulationData;
   initialParticipants: ParticipantData[];
   socketId: string;
-  pusher: Pusher;
+  echo: Echo;
 }
 
 export default function Simulation({
   data,
   initialParticipants,
   socketId,
-  pusher,
+  echo,
 }: SimulationProps) {
   const router = useRouter();
   const params = useParams<{ id: string; password: string }>();
@@ -86,62 +86,56 @@ export default function Simulation({
       .find((u: any) => u.socket_id === socketId);
     setCurrentParticipant(participant || '');
 
-    const channel = pusher.subscribe(`presence-simulations.${id}`);
-
-    channel.bind('pusher:subscription_error', () => {
-      alert('오류');
-      router.push('/');
-    });
-
-    channel.bind('simulation.processed', (res: any) => {
-      if (res.is_shutdown) {
-        setStatus(SimulationStatus.ShutDown);
-        alert('방 삭제 됨');
+    echo.private(`presence-simulations.${id}`)
+      .error(() => {
+        alert('오류');
         router.push('/');
-      }
-    });
+      })
+      .listen('simulation.processed', (res: any) => {
+        if (res.is_shutdown) {
+          setStatus(SimulationStatus.ShutDown);
+          alert('방 삭제 됨');
+          router.push('/');
+        }
+      })
+      .listen('simulation.participant.processed', (data: any) => {
+        const participants = data.participants.filter(
+          (u: any) => u.team !== null
+        );
+        setParticipants(participants);
 
-    channel.bind('simulation.participant.processed', (data: any) => {
-      const participants = data.participants.filter(
-        (u: any) => u.team !== null
-      );
-      setParticipants(participants);
+        const spectates = data.participants.filter((u: any) => u.team === null);
+        setSpectateParticipants(spectates);
 
-      const spectates = data.participants.filter((u: any) => u.team === null);
-      setSpectateParticipants(spectates);
+        if (data.is_start && status === SimulationStatus.Ready) {
+          setStatus(SimulationStatus.InProgress);
+        }
+      })
+      .listen('simulation.ended', (res: any) => {
+        if (res.is_shutdown) {
+          setStatus(SimulationStatus.ShutDown);
+          alert('종료 됨');
+          router.push('/');
+        }
 
-      if (data.is_start && status === SimulationStatus.Ready) {
-        setStatus(SimulationStatus.InProgress);
-      }
-    });
-
-    channel.bind('simulation.ended', (res: any) => {
-      if (res.is_shutdown) {
-        setStatus(SimulationStatus.ShutDown);
-        alert('종료 됨');
-        router.push('/');
-      }
-
-      setStatus(SimulationStatus.Swap);
-    });
-
-    channel.bind('ban-pick.processed', (res: any) => {
-      setBanPickData({
-        ...res['ban-pick'],
-        turn: res.turn,
-        img_default: res.champion?.img_default || '',
+        setStatus(SimulationStatus.Swap);
+      })
+      .listen('ban-pick.processed', (res: any) => {
+        setBanPickData({
+          ...res['ban-pick'],
+          turn: res.turn,
+          img_default: res.champion?.img_default || '',
+        });
+      })
+      .listen('ban-pick.updated', (data: any) => {
+        setSwapData({
+          ...data,
+          team: data.before.team,
+        });
       });
-    });
-
-    channel.bind('ban-pick.updated', (data: any) => {
-      setSwapData({
-        ...data,
-        team: data.before.team,
-      });
-    });
 
     return () => {
-      channel.disconnect();
+      echo.leave(`presence-simulations.${id}`);
     };
   }, []);
 
